@@ -5,7 +5,7 @@ import { red } from "@material-ui/core/colors"
 const theme = createMuiTheme({
 	typography: {
 		fontFamily: [
-			"Montserrat",
+			"Poppins",
 			"Inter",
 			"Arial",
 			"-apple-system",
@@ -21,10 +21,10 @@ const theme = createMuiTheme({
 	},
 	palette: {
 		primary: {
-			main: "#556cd6",
+			main: "#AD3391",
 		},
 		secondary: {
-			main: "#19857b",
+			main: "#4E1440",
 		},
 		error: {
 			main: red.A400,
