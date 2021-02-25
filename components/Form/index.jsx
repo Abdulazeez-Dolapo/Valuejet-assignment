@@ -1,4 +1,7 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
+
+import { fetchAirports } from "../../services/airports"
+import formCardStyles from "../../styles/formCard"
 
 import { makeStyles } from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
@@ -13,42 +16,14 @@ import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Button from "@material-ui/core/Button"
 
-const useStyles = makeStyles(theme => ({
-	cardWrapper: {
-		width: "100%",
-		minHeight: "30vh",
-		borderRadius: "10px",
-		padding: "1rem 4.2rem",
-	},
-	tripType: {
-		paddingRight: "1.8rem",
-	},
-	autocomplete: {
-		textAlign: "center",
-		border: "1px solid white",
-	},
-	textField: {},
-	button: {
-		textTransform: "capitalize",
-		borderRadius: "10px",
-		height: "2.5rem",
-		fontSize: "1.2rem",
-	},
-	label: {
-		fontSize: "0.7rem",
-	},
-	airportContainer: {
-		paddingTop: "2rem",
-	},
-	itemGrid: {
-		padding: "0 1rem",
-	},
-	select: {
-		border: "1px solid white",
-	},
-}))
+const useStyles = makeStyles(formCardStyles)
 
-const Index = () => {
+const FormCard = () => {
+	useEffect(async () => {
+		const airportData = await fetchAirports()
+		console.log(airportData)
+	}, [])
+
 	const TODAY_DATE = new Date().toISOString().split("T")[0]
 	const top100Films = [
 		{ title: "The Shawshank Redemption", year: 1994 },
@@ -263,4 +238,4 @@ const Index = () => {
 	)
 }
 
-export default Index
+export default FormCard
