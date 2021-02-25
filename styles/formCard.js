@@ -31,6 +31,16 @@ const formCardStyles = theme => ({
 	select: {
 		border: "1px solid white",
 	},
+	loader: {
+		width: "100%",
+		height: "100%",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	helperText: {
+		color: "red",
+	},
 })
 
 export default formCardStyles
