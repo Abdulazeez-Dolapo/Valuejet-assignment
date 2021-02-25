@@ -38,6 +38,7 @@ const FormCard = () => {
 	const [formState, setFormState] = useState(initialState)
 	const [airports, setAirports] = useState([])
 	const [loading, setLoading] = useState(false)
+	const [errorMessage, setErrorMessage] = useState(false)
 	const [isFormSubmitted, setIsFormSubmitted] = useState(false)
 
 	const airportFromRef = useRef()
@@ -52,7 +53,15 @@ const FormCard = () => {
 			{...params}
 			variant="standard"
 			fullWidth
-			// helperText={}
+			helperText={(() => {
+				const airport =
+					params.id === "From"
+						? formState.airportFrom
+						: formState.airportTo
+				const showHelperText = isFormSubmitted && !isAirportValid(airport)
+
+				return showHelperText && helperText("Please choose a valid airport")
+			})()}
 		/>
 	)
 	const getOptionSelected = (option, anotherOption) =>
@@ -60,9 +69,7 @@ const FormCard = () => {
 
 	const handleSubmit = event => {
 		event.preventDefault()
-		const isFormValid = validateForm()
-
-		if (!isFormValid) return
+		setIsFormSubmitted(true)
 
 		console.log(formState)
 	}
@@ -95,6 +102,11 @@ const FormCard = () => {
 		)
 	}
 
+	const isAirportValid = airport => {
+		// The default airports value doesn't have an id
+		return airport.hasOwnProperty("id")
+	}
+
 	useEffect(async () => {
 		setLoading(true)
 
@@ -102,7 +114,7 @@ const FormCard = () => {
 		if (!airportData?.error) {
 			setAirports(airportData.airports)
 		} else {
-			setNetworkError(airportData.message)
+			setErrorMessage(airportData.message)
 		}
 
 		setLoading(false)
