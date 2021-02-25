@@ -16,7 +16,7 @@ import Button from "@material-ui/core/Button"
 const useStyles = makeStyles(theme => ({
 	cardWrapper: {
 		width: "100%",
-		height: "30vh",
+		minHeight: "30vh",
 		borderRadius: "10px",
 		padding: "1rem 4.2rem",
 	},
