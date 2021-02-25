@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, Fragment } from "react"
 
 import { fetchAirports } from "../../services/airports"
 import {
@@ -9,6 +9,7 @@ import {
 } from "../../utils/validation"
 import formCardStyles from "../../styles/formCard"
 import Loader from "../UtilityComponents/Loader"
+import Notification from "../UtilityComponents/Notification"
 
 import { makeStyles } from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
@@ -44,8 +45,10 @@ const FormCard = () => {
 	const [formState, setFormState] = useState(initialState)
 	const [airports, setAirports] = useState([])
 	const [loading, setLoading] = useState(false)
-	const [errorMessage, setErrorMessage] = useState(false)
+	const [message, setMessage] = useState(false)
 	const [isFormSubmitted, setIsFormSubmitted] = useState(false)
+	const [severity, setSeverity] = useState("success")
+	const [notificationStatus, setNotificationStatus] = useState(false)
 
 	const airportFromRef = useRef()
 	const airportToRef = useRef()
@@ -81,6 +84,9 @@ const FormCard = () => {
 
 		if (!isFormValid(formState)) return
 
+		setMessage("Form submitted successfully")
+		setSeverity("success")
+		setNotificationStatus(true)
 		console.log(formState)
 	}
 	const handleChange = event => {
@@ -98,6 +104,10 @@ const FormCard = () => {
 		})
 	}
 
+	const handleNotificationClose = () => {
+		setNotificationStatus(false)
+	}
+
 	useEffect(async () => {
 		setLoading(true)
 
@@ -105,220 +115,233 @@ const FormCard = () => {
 		if (!airportData?.error) {
 			setAirports(airportData.airports)
 		} else {
-			setErrorMessage(airportData.message)
+			setMessage(airportData.message)
+			setSeverity("error")
+			setNotificationStatus(true)
 		}
 
 		setLoading(false)
 	}, [])
 
 	return (
-		<Card className={classes.cardWrapper}>
-			{loading ? (
-				<div className={classes.loader}>
-					<Loader size="3rem" />
-				</div>
-			) : (
-				<form onSubmit={handleSubmit}>
-					<div>
-						<RadioGroup
-							row
-							aria-label="tripType"
-							name="tripType"
-							value={formState.tripType}
-							onChange={handleChange}
-						>
-							{tripTypeItems.map(item => (
-								<FormControlLabel
-									value={item}
-									control={<Radio />}
-									label={item}
-									key={item}
-									className={classes.tripType}
-								/>
-							))}
-						</RadioGroup>
+		<Fragment>
+			<Card className={classes.cardWrapper}>
+				{loading ? (
+					<div className={classes.loader}>
+						<Loader size="3rem" />
 					</div>
-
-					<div className={classes.airportContainer}>
-						<Grid container>
-							<Grid item className={classes.itemGrid} xs={12} sm={6}>
-								<InputLabel className={classes.label} id="from">
-									From
-								</InputLabel>
-								<Autocomplete
-									ref={airportFromRef}
-									id="From"
-									name="airportFrom"
-									size="small"
-									options={airports}
-									value={formState.airportFrom}
-									onChange={(event, value) =>
-										handleAirportChange(
-											event,
-											value,
-											airportFromRef.current.getAttribute("name")
-										)
-									}
-									getOptionLabel={option =>
-										`${option.airCode} - ${option.airportName}`
-									}
-									getOptionSelected={getOptionSelected}
-									renderInput={inputRenderer}
-									disableClearable
-									className={classes.autocomplete}
-								/>
-							</Grid>
-
-							<Grid item className={classes.itemGrid} xs={12} sm={6}>
-								<InputLabel className={classes.label} id="to">
-									To
-								</InputLabel>
-								<Autocomplete
-									ref={airportToRef}
-									id="To"
-									name="airportTo"
-									size="small"
-									options={airports}
-									value={formState.airportTo}
-									onChange={(event, value) =>
-										handleAirportChange(
-											event,
-											value,
-											airportToRef.current.getAttribute("name")
-										)
-									}
-									getOptionLabel={option =>
-										`${option.airCode} - ${option.airportName}`
-									}
-									getOptionSelected={getOptionSelected}
-									renderInput={inputRenderer}
-									disableClearable
-									className={classes.autocomplete}
-								/>
-							</Grid>
-						</Grid>
-					</div>
-
-					<div className={classes.airportContainer}>
-						<Grid container>
-							<Grid
-								item
-								className={classes.itemGrid}
-								xs={12}
-								sm={6}
-								md={3}
+				) : (
+					<form onSubmit={handleSubmit}>
+						<div>
+							<RadioGroup
+								row
+								aria-label="tripType"
+								name="tripType"
+								value={formState.tripType}
+								onChange={handleChange}
 							>
-								<InputLabel
-									className={classes.label}
-									id="departureDate-label"
-								>
-									Departing
-								</InputLabel>
+								{tripTypeItems.map(item => (
+									<FormControlLabel
+										value={item}
+										control={<Radio />}
+										label={item}
+										key={item}
+										className={classes.tripType}
+									/>
+								))}
+							</RadioGroup>
+						</div>
 
-								<TextField
-									id="departureDate"
-									value={formState.departureDate}
-									name="departureDate"
-									type="date"
-									className={classes.textField}
-									onChange={handleChange}
-									fullWidth
-									helperText={
-										!isDepartureDateValid(formState.departureDate) &&
-										helperText(
-											"Departure date can not be before today"
-										)
-									}
-								/>
+						<div className={classes.airportContainer}>
+							<Grid container>
+								<Grid item className={classes.itemGrid} xs={12} sm={6}>
+									<InputLabel className={classes.label} id="from">
+										From
+									</InputLabel>
+									<Autocomplete
+										ref={airportFromRef}
+										id="From"
+										name="airportFrom"
+										size="small"
+										options={airports}
+										value={formState.airportFrom}
+										onChange={(event, value) =>
+											handleAirportChange(
+												event,
+												value,
+												airportFromRef.current.getAttribute("name")
+											)
+										}
+										getOptionLabel={option =>
+											`${option.airCode} - ${option.airportName}`
+										}
+										getOptionSelected={getOptionSelected}
+										renderInput={inputRenderer}
+										disableClearable
+										className={classes.autocomplete}
+									/>
+								</Grid>
+
+								<Grid item className={classes.itemGrid} xs={12} sm={6}>
+									<InputLabel className={classes.label} id="to">
+										To
+									</InputLabel>
+									<Autocomplete
+										ref={airportToRef}
+										id="To"
+										name="airportTo"
+										size="small"
+										options={airports}
+										value={formState.airportTo}
+										onChange={(event, value) =>
+											handleAirportChange(
+												event,
+												value,
+												airportToRef.current.getAttribute("name")
+											)
+										}
+										getOptionLabel={option =>
+											`${option.airCode} - ${option.airportName}`
+										}
+										getOptionSelected={getOptionSelected}
+										renderInput={inputRenderer}
+										disableClearable
+										className={classes.autocomplete}
+									/>
+								</Grid>
 							</Grid>
+						</div>
 
-							<Grid
-								item
-								className={classes.itemGrid}
-								xs={12}
-								sm={6}
-								md={3}
-							>
-								<InputLabel
-									className={classes.label}
-									id="arrivalDate-label"
+						<div className={classes.airportContainer}>
+							<Grid container>
+								<Grid
+									item
+									className={classes.itemGrid}
+									xs={12}
+									sm={6}
+									md={3}
 								>
-									Arriving
-								</InputLabel>
+									<InputLabel
+										className={classes.label}
+										id="departureDate-label"
+									>
+										Departing
+									</InputLabel>
 
-								<TextField
-									id="arrivalDate"
-									value={formState.arrivalDate}
-									name="arrivalDate"
-									type="date"
-									className={classes.textField}
-									onChange={handleChange}
-									fullWidth
-									helperText={
-										!isArrivalDateValid(
-											formState.arrivalDate,
-											formState.departureDate
-										) &&
-										helperText(
-											"Arrival date can not be before departure date"
-										)
-									}
-								/>
+									<TextField
+										id="departureDate"
+										value={formState.departureDate}
+										name="departureDate"
+										type="date"
+										className={classes.textField}
+										onChange={handleChange}
+										fullWidth
+										helperText={
+											!isDepartureDateValid(
+												formState.departureDate
+											) &&
+											helperText(
+												"Departure date can not be before today"
+											)
+										}
+									/>
+								</Grid>
+
+								<Grid
+									item
+									className={classes.itemGrid}
+									xs={12}
+									sm={6}
+									md={3}
+								>
+									<InputLabel
+										className={classes.label}
+										id="arrivalDate-label"
+									>
+										Arriving
+									</InputLabel>
+
+									<TextField
+										id="arrivalDate"
+										value={formState.arrivalDate}
+										name="arrivalDate"
+										type="date"
+										className={classes.textField}
+										onChange={handleChange}
+										fullWidth
+										helperText={
+											!isArrivalDateValid(
+												formState.arrivalDate,
+												formState.departureDate
+											) &&
+											helperText(
+												"Arrival date can not be before departure date"
+											)
+										}
+									/>
+								</Grid>
+
+								<Grid
+									item
+									className={classes.itemGrid}
+									xs={12}
+									sm={6}
+									md={3}
+								>
+									<InputLabel
+										className={classes.label}
+										id="Passengers-label"
+									>
+										Passengers
+									</InputLabel>
+									<Select
+										labelId="demo-simple-select-label"
+										id="demo-simple-select"
+										value={formState.passengers}
+										onChange={handleChange}
+										fullWidth
+										name="passengers"
+										className={classes.select}
+									>
+										{passengersNumber.map(num => (
+											<MenuItem key={num} value={num}>
+												{num}
+											</MenuItem>
+										))}
+									</Select>
+								</Grid>
+
+								<Grid
+									item
+									className={classes.itemGrid}
+									xs={12}
+									sm={6}
+									md={3}
+								>
+									<Button
+										variant="contained"
+										disableElevation
+										color="secondary"
+										type="submit"
+										className={classes.button}
+										fullWidth
+									>
+										Search
+									</Button>
+								</Grid>
 							</Grid>
+						</div>
+					</form>
+				)}
+			</Card>
 
-							<Grid
-								item
-								className={classes.itemGrid}
-								xs={12}
-								sm={6}
-								md={3}
-							>
-								<InputLabel
-									className={classes.label}
-									id="Passengers-label"
-								>
-									Passengers
-								</InputLabel>
-								<Select
-									labelId="demo-simple-select-label"
-									id="demo-simple-select"
-									value={formState.passengers}
-									onChange={handleChange}
-									fullWidth
-									name="passengers"
-									className={classes.select}
-								>
-									{passengersNumber.map(num => (
-										<MenuItem key={num} value={num}>
-											{num}
-										</MenuItem>
-									))}
-								</Select>
-							</Grid>
-
-							<Grid
-								item
-								className={classes.itemGrid}
-								xs={12}
-								sm={6}
-								md={3}
-							>
-								<Button
-									variant="contained"
-									disableElevation
-									color="secondary"
-									type="submit"
-									className={classes.button}
-									fullWidth
-								>
-									Search
-								</Button>
-							</Grid>
-						</Grid>
-					</div>
-				</form>
-			)}
-		</Card>
+			<Notification
+				open={notificationStatus}
+				message={message}
+				severity={severity}
+				handleClose={handleNotificationClose}
+			/>
+		</Fragment>
 	)
 }
 
