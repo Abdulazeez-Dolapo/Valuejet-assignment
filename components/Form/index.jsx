@@ -48,28 +48,32 @@ const FormCard = () => {
 		return <span className={classes.helperText}>{message}</span>
 	}
 
-	const inputRenderer = params => (
-		<TextField
-			{...params}
-			variant="standard"
-			fullWidth
-			helperText={(() => {
-				const airport =
-					params.id === "From"
-						? formState.airportFrom
-						: formState.airportTo
-				const showHelperText = isFormSubmitted && !isAirportValid(airport)
+	const inputRenderer = params => {
+		const getHelperText = () => {
+			const airport =
+				params.id === "From" ? formState.airportFrom : formState.airportTo
+			const showHelperText = isFormSubmitted && !isAirportValid(airport)
 
-				return showHelperText && helperText("Please choose a valid airport")
-			})()}
-		/>
-	)
+			return showHelperText && helperText("Please choose a valid airport")
+		}
+
+		return (
+			<TextField
+				{...params}
+				variant="standard"
+				fullWidth
+				helperText={getHelperText()}
+			/>
+		)
+	}
 	const getOptionSelected = (option, anotherOption) =>
 		option.id === anotherOption.id
 
 	const handleSubmit = event => {
 		event.preventDefault()
 		setIsFormSubmitted(true)
+
+		if (!isFormValid(formState)) return
 
 		console.log(formState)
 	}
@@ -105,6 +109,22 @@ const FormCard = () => {
 	const isAirportValid = airport => {
 		// The default airports value doesn't have an id
 		return airport.hasOwnProperty("id")
+	}
+
+	const isFormValid = formData => {
+		const { airportFrom, airportTo, departureDate, arrivalDate } = formData
+
+		const validDepartureDate = isDepartureDateValid(departureDate)
+		const validArrivalDate = isArrivalDateValid(arrivalDate, departureDate)
+		const validAirportFrom = isAirportValid(airportFrom)
+		const validAirportTo = isAirportValid(airportTo)
+
+		return (
+			validDepartureDate &&
+			validArrivalDate &&
+			validAirportFrom &&
+			validAirportTo
+		)
 	}
 
 	useEffect(async () => {
