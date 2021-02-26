@@ -1,41 +1,12 @@
 import Image from "next/image"
 import Link from "next/link"
+import headerStyles from "../../styles/header"
 
 import { makeStyles } from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 
-const useStyles = makeStyles(theme => ({
-	root: {
-		height: "8vh",
-		backgroundColor: theme.palette.primary.main,
-		paddingTop: "1rem",
-		boxShadow: "0 0 8px",
-	},
-	logo: {
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	signIn: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	navItems: {
-		display: "flex",
-		justifyContent: "space-around",
-		alignItems: "center",
-	},
-	headerText: {
-		fontSize: "1.5rem",
-		fontWeight: 400,
-	},
-	link: {
-		color: "black",
-		textDecoration: "none",
-	},
-}))
+const useStyles = makeStyles(headerStyles)
 
 const Header = () => {
 	const classes = useStyles()
@@ -62,7 +33,7 @@ const Header = () => {
 	return (
 		<div className={classes.root}>
 			<Grid container>
-				<Grid className={classes.logo} item xs={12} sm={4} md={4} lg={4}>
+				<Grid className={classes.logo} item xs={6} sm={4} md={4} lg={4}>
 					<Image
 						src="/images/logo.svg"
 						alt="ValueJet logo"

@@ -59,6 +59,7 @@ const FormCard = () => {
 
 	const inputRenderer = params => {
 		const getHelperText = () => {
+			// Choose airport to show helper text for based on the id of the autocomplete
 			const airport =
 				params.id === "From" ? formState.airportFrom : formState.airportTo
 			const showHelperText = isFormSubmitted && !isAirportValid(airport)
