@@ -78,16 +78,19 @@ const FormCard = () => {
 	const getOptionSelected = (option, anotherOption) =>
 		option.id === anotherOption.id
 
+	const displayNotification = (message, notificationType) => {
+		setMessage(message)
+		setSeverity(notificationType)
+		setNotificationStatus(true)
+	}
+
 	const handleSubmit = event => {
 		event.preventDefault()
 		setIsFormSubmitted(true)
 
 		if (!isFormValid(formState)) return
 
-		setMessage("Form submitted successfully")
-		setSeverity("success")
-		setNotificationStatus(true)
-		console.log(formState)
+		displayNotification("Form submitted successfully", "success")
 	}
 	const handleChange = event => {
 		const { name, value } = event.target
@@ -115,9 +118,7 @@ const FormCard = () => {
 		if (!airportData?.error) {
 			setAirports(airportData.airports)
 		} else {
-			setMessage(airportData.message)
-			setSeverity("error")
-			setNotificationStatus(true)
+			displayNotification(airportData.message, "error")
 		}
 
 		setLoading(false)
